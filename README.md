@@ -3,10 +3,10 @@
 ## Descripción
 Breakout es un juego clásico de arcade en el que el jugador controla una paleta que rebota una pelota para destruir una serie de bloques dispuestos en la pantalla. El objetivo es eliminar todos los bloques sin dejar que la pelota caiga al suelo. Cada vez que la pelota golpea un bloque, el bloque desaparece y el jugador gana puntos. El juego aumenta de dificultad a medida que se eliminan los bloques y la velocidad de la pelota aumenta.
 
-## Capturas de Pantalla
+## Breakout  
 
 <div align="center">
-  <img src="https://github.com/SebastianINF/alleyway/public/alleyway.jpg">
+  <img  width="500px" src="https://github.com/SebastianINF/breakout/blob/master/public/breakout.jpg" alt="game" boder="0" />
 </div>
 
 ## Características
