@@ -4,8 +4,8 @@ const sprites = document.getElementById('sprites')
 const score = document.getElementById('score')
 
 // canvas
-canvas.width = 600
-canvas.height = 400
+canvas.width = 500 
+canvas.height =  canvas.width * 3 / 4 
 
 // ball
 let ballX = canvas.width / 2
@@ -13,23 +13,25 @@ let ballY = canvas.height - 30
 const ballRadius = 5
 const ballStartAngle = 0
 const ballEndAngle = 2 * Math.PI
-const ballVelocity = 6
-let balldx = ballVelocity
-let balldy = ballVelocity
+const ballVelocity = 5
+const max = ballVelocity
+const min = -ballVelocity
+let balldx = (Math.random() * (max - min + 1)) + min // da igual
+let balldy = ballVelocity // positivo
 
 // paddle
-const paddleWidth = 100
-const paddleHeight = 15
+const paddleWidth = 83 
+const paddleHeight = 17 
 let paddleX = canvas.width / 2 - paddleWidth / 2
 let paddleY = canvas.height - 20
 let paddleVelocity = 10
 
 // bricks
 const bricks = []
-const bricksX = 110
+const bricksX = 68
 const bricksY = 20
-const bricksRowCount = 10
-const bricksColCount = 4
+const bricksRowCount = 10  
+const bricksColCount = 4 
 const bricksPadding = 9
 const brickWidth = 30
 const brickHeight = 20
@@ -92,7 +94,7 @@ function drawBall() {
 
 function drawPaddle() {
   ctx.fillStyle = 'blue'
-  ctx.drawImage(sprites, 326, 506, 83, 17, paddleX, paddleY, 83, 17)
+  ctx.drawImage(sprites, 326, 506, paddleWidth, paddleHeight, paddleX, paddleY, paddleWidth, paddleHeight)
 }
 
 function drawBricks() {
@@ -123,9 +125,6 @@ function checkCollision() {
   } else if (ballY + ballRadius > canvas.height) {
     ballX = canvas.width / 2
     ballY = canvas.height - 30
-    balldx = 2
-    balldy = 2
-    gameOver = true
     document.location.reload()
   } else if (
     ballY + ballRadius > paddleY &&
@@ -143,13 +142,13 @@ function checkCollisionBricks() {
   for (let f = 0; f < bricksRowCount; f++) {
     for (let c = 0; c < bricksColCount; c++) {
       let ref = bricks[f][c]
-      const { x, y } = ref
-      if (!ref.status) continue
+      const { x, y , status} = ref
+      if (!status) continue
 
-      let brickTop = ref.y
-      let brickBottom = ref.y + brickHeight
-      let brickLeft = ref.x
-      let brickRight = ref.x + brickWidth
+      let brickTop = y
+      let brickBottom = y + brickHeight
+      let brickLeft = x
+      let brickRight = x + brickWidth
 
       let ballTop = ballY - ballRadius
       let ballBottom = ballY + ballRadius
@@ -171,7 +170,7 @@ function checkCollisionBricks() {
           balldy = -balldy
         }
 
-        +score.textContent++
+        score.textContent++
         ref.status = false
       }
     }
@@ -186,27 +185,6 @@ function movePaddle() {
   }
 }
 
-function checkGameOver() {
-  if (!gameOver) return
-  alert('Game Over')
-  if(win){
-    alert('You Win')
-    document.location.reload()
-  }
-}
-
-function checkWinner() {
-  for (let f = 0; f < bricksRowCount; f++) {
-    for(let c = 0; c < bricksColCount; c++) {
-      if(bricks[f][c].status){
-        return
-      }
-    }
-  }
-  win = true
-  gameOver = true
-}
-
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   drawBricks()
@@ -214,8 +192,6 @@ function draw() {
   drawBall()
   drawPaddle()
   movePaddle()
-  checkGameOver()
-  checkWinner()
   requestAnimationFrame(draw)
 }
 

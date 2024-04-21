@@ -6,7 +6,7 @@ Breakout es un juego clásico de arcade en el que el jugador controla una paleta
 ## Breakout  
 
 <div align="center">
-  <img  width="500px" src="https://github.com/SebastianINF/breakout/blob/master/public/breakout.jpg" alt="game" boder="0" />
+  <img  width="500px" src="https://github.com/SebastianINF/breakout/blob/master/breakout.jpg" alt="game" boder="0" />
 </div>
 
 ## Características
