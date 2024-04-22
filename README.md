@@ -19,6 +19,9 @@ Breakout es un juego clásico de arcade en el que el jugador controla una paleta
 - Utiliza las teclas de flecha izquierda (`←`) y derecha (`→`) para mover la paleta horizontalmente.
 - Tambien puedes utilizar el mouse
 
+## Web 
+- Visita la pagina web [snake-web](https://snake-lemon-eta.vercel.app/)
+
 ## Tecnologías Utilizadas
 - HTML5
 - CSS3
