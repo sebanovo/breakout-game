@@ -1,11 +1,19 @@
-const canvas = document.querySelector('canvas')
+const canvas = document.getElementById('breakout')
 const ctx = canvas.getContext('2d')
 const sprites = document.getElementById('sprites')
 const score = document.getElementById('score')
 const highScore = document.getElementById('high-score')
 
+canvas.width = 500
+canvas.height = 375
+
+const audioBrickCollision = new Audio('./audio/brickCollision.wav')
+audioBrickCollision.playbackRate = 2.5
+const audioBoundaryCollision = new Audio('./audio/boundaryCollision.wav')
+
 // level
-const FPS = 10
+const FPS = 60
+const interval = 1000 / FPS
 
 highScore.textContent = window.localStorage.getItem('highScore') || score.textContent
 // time out
@@ -68,6 +76,7 @@ function keyDownHandler(e) {
     leftPressed = true
   }
 }
+
 function keyUpHandler(e) {
   if (e.keyCode === 39) {
     rightPressed = false
@@ -83,10 +92,12 @@ function mouseMoveHandler(e) {
   }
 }
 
-function enterHandler (e) {
-  if (e.key === 'Enter' && (gameOver || win)) document.location.reload()
+function enterHandler(e) {
+  if (e.key === 'Enter' && (gameOver || win)) {
+    // document.location.reload()
+    reiniciarValores();
+  }
 }
-
 
 function moveBall() {
   ballX += balldx
@@ -139,12 +150,18 @@ function drawBricks() {
   }
 }
 
-function checkCollision() {
+function checkBoundaryCollision() {
   if (ballX + ballRadius > canvas.width || ballX - ballRadius < 0) {
     balldx = -balldx
+    audioBoundaryCollision.play()
   } else if (ballY - ballRadius < 0) {
     balldy = -balldy
-  } else if (ballY + ballRadius > canvas.height) {
+    audioBoundaryCollision.play()
+  }
+}
+
+function checkCollision() {
+  if (ballY + ballRadius > canvas.height) {
     balldy = 0
     balldx = 0
     gameOver = true
@@ -155,10 +172,10 @@ function checkCollision() {
   ) {
     balldy = -balldy
     ballY = paddleY - ballRadius
-  } 
+  }
 }
 
-function checkCollisionBricks() {
+function checkBrickCollision() {
   for (let f = 0; f < bricksRowCount; f++) {
     for (let c = 0; c < bricksColCount; c++) {
       let ref = bricks[f][c]
@@ -190,6 +207,7 @@ function checkCollisionBricks() {
           balldy = -balldy
         }
 
+        audioBrickCollision.play()
         score.textContent++
         ref.status = false
       }
@@ -216,17 +234,17 @@ function checkGameOver() {
     ctx.fillText('Press Enter', canvas.width / 2 - 100, canvas.height / 2 + 30)
     const currenScore = +score.textContent
     const oldScore = +window.localStorage.getItem('highScore') || currenScore
-    if(oldScore <= currenScore){
+    if (oldScore <= currenScore) {
       window.localStorage.setItem('highScore', score.textContent)
     }
   }
 }
 
-
-function checkWin () {
+function checkWin() {
   // check if every brick is broken
-  win =  bricks.every(row => row.every(brick => !brick.status))
-  if(win) {
+  win = bricks.every(row => row.every(brick => !brick.status))
+  if (win) {
+    confetti()
     clearInterval(setIntervalId)
     ctx.globalCompositeOperation = 'source-over'
     ctx.fillStyle = 'black'
@@ -242,7 +260,8 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   checkGameOver()
   checkWin()
-  checkCollisionBricks()
+  checkBrickCollision()
+  checkBoundaryCollision()
   checkCollision()
   drawBricks()
   drawBall()
@@ -251,4 +270,8 @@ function draw() {
   movePaddle()
 }
 
-setIntervalId = setInterval(draw, FPS)
+function play() {
+  setIntervalId = setInterval(draw, interval)
+}
+
+play()
