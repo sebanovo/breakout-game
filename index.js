@@ -1,23 +1,23 @@
 const canvas = document.getElementById('breakout')
 const ctx = canvas.getContext('2d')
-const sprites = document.getElementById('sprites')
 const score = document.getElementById('score')
-const highScore = document.getElementById('high-score')
+const $highScore = document.getElementById('high-score')
 
 canvas.width = 500
 canvas.height = 375
 
-const audioBrickCollision = new Audio('./audio/brickCollision.wav')
-audioBrickCollision.playbackRate = 2.5
+$highScore.textContent = window.localStorage.getItem('highScore') || score.textContent
+
+const sprites = new Image()
+sprites.src = './breakout.jpg'
+const brickCollisionAudio = new Audio('./audio/brickCollision.wav')
+brickCollisionAudio.playbackRate = 2.5
 const audioBoundaryCollision = new Audio('./audio/boundaryCollision.wav')
+const backgroundAudio = new Audio('./audio/backgroundAudio.wav')
+backgroundAudio.play()
 
-// level
-const FPS = 60
-const interval = 1000 / FPS
-
-highScore.textContent = window.localStorage.getItem('highScore') || score.textContent
-// time out
-let setIntervalId
+// requestID
+let requestID
 
 // ball
 let ballX = canvas.width / 2
@@ -25,7 +25,7 @@ let ballY = canvas.height - 30
 const ballRadius = 5
 const ballStartAngle = 0
 const ballEndAngle = 2 * Math.PI
-const ballVelocity = 5
+const ballVelocity = 10
 const max = ballVelocity
 const min = -ballVelocity
 let balldx = Math.random() * (max - min + 1) + min // da igual
@@ -59,9 +59,8 @@ for (let f = 0; f < bricksRowCount; f++) {
 let rightPressed = false
 let leftPressed = false
 
-// game over
+// flags
 let gameOver = false
-// win
 let win = false
 
 document.addEventListener('keydown', keyDownHandler, false)
@@ -92,9 +91,32 @@ function mouseMoveHandler(e) {
   }
 }
 
+function resetVariables() {
+  $highScore.textContent = window.localStorage.getItem('highScore') || score.textContent
+  gameOver = false
+  win = false
+  rightPressed = false
+  leftPressed = false
+  ballX = canvas.width / 2
+  ballY = canvas.height - 30
+  balldy = ballVelocity
+  balldx = Math.random() * (max - min + 1) + min
+
+  for (let f = 0; f < bricksRowCount; f++) {
+    bricks[f] = []
+    for (let c = 0; c < bricksColCount; c++) {
+      bricks[f][c] = { x: 0, y: 0, status: true }
+    }
+  }
+
+  score.textContent = 0
+}
+
 function enterHandler(e) {
   if (e.key === 'Enter' && (gameOver || win)) {
-    document.location.reload()
+    resetVariables()
+    cancelAnimationFrame(requestID) // necessary
+    draw()
   }
 }
 
@@ -104,9 +126,9 @@ function moveBall() {
 }
 
 function drawBall() {
-  ctx.fillStyle = 'white'
+  ctx.fillStyle = '#fff'
   ctx.lineWidth = 5
-  ctx.strokeStyle = 'black'
+  ctx.strokeStyle = '#000'
   ctx.beginPath()
   ctx.arc(ballX, ballY, ballRadius, ballStartAngle, ballEndAngle)
   ctx.fill()
@@ -115,7 +137,6 @@ function drawBall() {
 }
 
 function drawPaddle() {
-  ctx.fillStyle = 'blue'
   ctx.drawImage(
     sprites,
     326,
@@ -206,7 +227,7 @@ function checkBrickCollision() {
           balldy = -balldy
         }
 
-        audioBrickCollision.play()
+        brickCollisionAudio.play()
         score.textContent++
         ref.status = false
       }
@@ -224,9 +245,7 @@ function movePaddle() {
 
 function checkGameOver() {
   if (gameOver) {
-    clearInterval(setIntervalId)
-    ctx.globalCompositeOperation = 'source-over'
-    ctx.fillStyle = 'black'
+    ctx.fillStyle = '#000'
     ctx.font = '50px Arial'
     ctx.fillText('Game Over', canvas.width / 2 - 120, canvas.height / 2)
     ctx.font = '30px Arial'
@@ -236,22 +255,21 @@ function checkGameOver() {
     if (oldScore <= currenScore) {
       window.localStorage.setItem('highScore', score.textContent)
     }
+    cancelAnimationFrame(requestID)
   }
 }
 
 function checkWin() {
-  // check if every brick is broken
   win = bricks.every(row => row.every(brick => !brick.status))
   if (win) {
     confetti()
-    clearInterval(setIntervalId)
-    ctx.globalCompositeOperation = 'source-over'
     ctx.fillStyle = 'black'
     ctx.font = '50px Arial'
     ctx.fillText('You Win', canvas.width / 2 - 120, canvas.height / 2)
     ctx.font = '30px Arial'
     ctx.fillText('Press Enter', canvas.width / 2 - 100, canvas.height / 2 + 30)
     window.localStorage.setItem('highScore', score.textContent)
+    cancelAnimationFrame(requestID)
   }
 }
 
@@ -267,10 +285,7 @@ function draw() {
   drawPaddle()
   moveBall()
   movePaddle()
+  requestID = requestAnimationFrame(draw)
 }
 
-function play() {
-  setIntervalId = setInterval(draw, interval)
-}
-
-play()
+draw()
