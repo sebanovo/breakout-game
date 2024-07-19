@@ -20,7 +20,7 @@ Breakout es un juego clásico de arcade en el que el jugador controla una paleta
 - Tambien puedes utilizar el mouse
 
 ## Web 
-- Visita la pagina web [snake-web](https://snake-lemon-eta.vercel.app/)
+- Visita la pagina web [breakout](https://breakout-red.vercel.app/)
 
 ## Tecnologías Utilizadas
 - HTML5
