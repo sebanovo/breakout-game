@@ -94,8 +94,7 @@ function mouseMoveHandler(e) {
 
 function enterHandler(e) {
   if (e.key === 'Enter' && (gameOver || win)) {
-    // document.location.reload()
-    reiniciarValores();
+    document.location.reload()
   }
 }
 
