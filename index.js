@@ -14,7 +14,8 @@ const brickCollisionAudio = new Audio('./audio/brickCollision.wav')
 brickCollisionAudio.playbackRate = 2.5
 const audioBoundaryCollision = new Audio('./audio/boundaryCollision.wav')
 const backgroundAudio = new Audio('./audio/backgroundAudio.wav')
-backgroundAudio.play()
+
+//backgroundAudio.play()
 
 // requestID
 let requestID
@@ -288,4 +289,23 @@ function draw() {
   requestID = requestAnimationFrame(draw)
 }
 
-draw()
+function initGame() {
+  ctx.fillStyle = 'black'
+  ctx.font = '50px Arial'
+  ctx.fillText('Init Game', canvas.width / 2 - 120, canvas.height / 2)
+  ctx.font = '30px Arial'
+  ctx.fillText('Press Enter', canvas.width / 2 - 100, canvas.height / 2 + 30)
+  document.addEventListener('keydown', handleKeyDown)
+}
+
+function handleKeyDown(e) {
+  if (e.key === 'Enter') {
+    document.removeEventListener('keydown', handleKeyDown)
+    backgroundAudio.play().catch(error => {
+      alert(error)
+    })
+    draw()
+  }
+}
+
+initGame()
